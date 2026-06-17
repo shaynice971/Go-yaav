@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#0A1628" />
+  <title>Go'Yaav — Arrivée</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root { --night: #0A1628; --ocean: #0D2444; --mango: #FF6B2B; --mango-light: #FF8C5A; --lime: #C8F135; --white: #F7F4EE; --grey: #8A9BB0; }
+    html, body { height: 100%; background: var(--night); color: var(--white); font-family: 'Inter', sans-serif; }
+    .bg { position: fixed; inset: 0; background: radial-gradient(ellipse 80% 60% at 50% 0%, #1a3a5c 0%, #0A1628 70%); }
+    .screen { position: relative; z-index: 1; min-height: 100vh; display: flex; flex-direction: column; padding: 52px 24px 40px; max-width: 430px; margin: 0 auto; }
+
+    .arrived-banner { display: flex; flex-direction: column; align-items: center; text-align: center; margin-bottom: 28px; }
+    .arrived-icon { font-size: 52px; margin-bottom: 12px; }
+    .arrived-title { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 28px; margin-bottom: 6px; }
+    .arrived-sub { font-size: 14px; color: var(--grey); }
+
+    .recu-card { background: var(--ocean); border: 1px solid rgba(255,255,255,0.08); border-radius: 20px; padding: 20px; margin-bottom: 20px; }
+    .recu-title { font-size: 12px; font-weight: 600; color: var(--grey); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 16px; }
+    .recu-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.06); }
+    .recu-row:last-child { border-bottom: none; }
+    .recu-label { font-size: 14px; color: var(--grey); }
+    .recu-value { font-size: 14px; font-weight: 600; color: var(--white); }
+    .recu-total { font-size: 18px; font-weight: 700; color: var(--mango); }
+
+    .note-section { margin-bottom: 20px; }
+    .note-title { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 18px; margin-bottom: 6px; }
+    .note-sub { font-size: 13px; color: var(--grey); margin-bottom: 16px; }
+    .stars { display: flex; gap: 12px; justify-content: center; margin-bottom: 16px; }
+    .star { font-size: 40px; cursor: pointer; filter: grayscale(1); transition: filter 0.15s ease, transform 0.15s ease; }
+    .star.active { filter: grayscale(0); transform: scale(1.1); }
+
+    .comment-input { width: 100%; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); border-radius: 14px; padding: 14px; font-family: 'Inter', sans-serif; font-size: 14px; color: var(--white); outline: none; resize: none; height: 80px; }
+    .comment-input::placeholder { color: var(--grey); }
+    .comment-input:focus { border-color: var(--mango); }
+
+    .pourboire-section { margin-bottom: 24px; }
+    .pourboire-title { font-size: 15px; font-weight: 600; margin-bottom: 12px; }
+    .pourboire-options { display: flex; gap: 8px; }
+    .pourboire-btn { flex: 1; padding: 12px 8px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; font-family: 'Inter', sans-serif; font-size: 14px; font-weight: 600; color: var(--white); cursor: pointer; text-align: center; transition: all 0.2s ease; }
+    .pourboire-btn.selected { background: rgba(255,107,43,0.12); border-color: var(--mango); color: var(--mango); }
+    .pourboire-btn.no-tip { color: var(--grey); font-size: 12px; }
+
+    .btn-terminer { width: 100%; padding: 18px; border-radius: 16px; font-family: 'Inter', sans-serif; font-size: 16px; font-weight: 600; border: none; cursor: pointer; background: var(--mango); color: white; box-shadow: 0 8px 32px rgba(255,107,43,0.4); margin-bottom: 12px; transition: transform 0.15s ease; }
+    .btn-terminer:active { transform: scale(0.97); }
+    .btn-accueil { width: 100%; padding: 14px; border-radius: 16px; font-family: 'Inter', sans-serif; font-size: 15px; font-weight: 500; border: 1px solid rgba(255,255,255,0.1); background: transparent; color: var(--grey); cursor: pointer; }
+  </style>
+</head>
+<body>
+  <div class="bg"></div>
+  <div class="screen">
+
+    <div class="arrived-banner">
+      <div class="arrived-icon">🏁</div>
+      <div class="arrived-title">Vous êtes arrivé(e) !</div>
+      <div class="arrived-sub" id="arrivedSub">Course terminée</div>
+    </div>
+
+    <div class="recu-card">
+      <div class="recu-title">Récapitulatif de la course</div>
+      <div class="recu-row">
+        <div class="recu-label">Départ</div>
+        <div class="recu-value" id="recuDepart">—</div>
+      </div>
+      <div class="recu-row">
+        <div class="recu-label">Arrivée</div>
+        <div class="recu-value" id="recuArrivee">—</div>
+      </div>
+      <div class="recu-row">
+        <div class="recu-label">Chauffeur</div>
+        <div class="recu-value">Marcus T.</div>
+      </div>
+      <div class="recu-row">
+        <div class="recu-label">Mode</div>
+        <div class="recu-value" id="recuMode">Standard</div>
+      </div>
+      <div class="recu-row">
+        <div class="recu-label">Paiement</div>
+        <div class="recu-value">💳 Carte bancaire</div>
+      </div>
+      <div class="recu-row">
+        <div class="recu-label">Total</div>
+        <div class="recu-value recu-total" id="recuPrix">—</div>
+      </div>
+    </div>
+
+    <div class="note-section">
+      <div class="note-title">Comment s'est passée la course ?</div>
+      <div class="note-sub">Votre avis aide à améliorer Go'Yaav</div>
+      <div class="stars">
+        <div class="star" onclick="setNote(1)">⭐</div>
+        <div class="star" onclick="setNote(2)">⭐</div>
+        <div class="star" onclick="setNote(3)">⭐</div>
+        <div class="star" onclick="setNote(4)">⭐</div>
+        <div class="star" onclick="setNote(5)">⭐</div>
+      </div>
+      <textarea class="comment-input" placeholder="Laisser un commentaire (facultatif)..."></textarea>
+    </div>
+
+    <div class="pourboire-section">
+      <div class="pourboire-title">Laisser un pourboire ? 🙏</div>
+      <div class="pourboire-options">
+        <div class="pourboire-btn" onclick="setPourboire(this, '1€')">1€</div>
+        <div class="pourboire-btn" onclick="setPourboire(this, '2€')">2€</div>
+        <div class="pourboire-btn" onclick="setPourboire(this, '3€')">3€</div>
+        <div class="pourboire-btn no-tip" onclick="setPourboire(this, '0')">Pas maintenant</div>
+      </div>
+    </div>
+
+    <button class="btn-terminer" onclick="terminer()">Envoyer mon avis</button>
+    <button class="btn-accueil" onclick="window.location.href='accueil.html'">Retour à l'accueil</button>
+
+  </div>
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const depart = params.get('depart') || '—';
+    const arrivee = params.get('arrivee') || '—';
+    const prix = params.get('prix') || '—';
+    const mode = params.get('mode') || 'standard';
+
+    document.getElementById('recuDepart').textContent = depart;
+    document.getElementById('recuArrivee').textContent = arrivee;
+    document.getElementById('recuPrix').textContent = prix;
+    document.getElementById('recuMode').textContent = mode === 'she' ? 'She Rides 👩' : mode === 'xl' ? 'XL 🚐' : 'Standard 🚗';
+    document.getElementById('arrivedSub').textContent = depart + ' → ' + arrivee;
+
+    let noteChoisie = 0;
+    function setNote(n) {
+      noteChoisie = n;
+      document.querySelectorAll('.star').forEach((s, i) => {
+        s.classList.toggle('active', i < n);
+      });
+    }
+
+    let pourboire = '0';
+    function setPourboire(el, val) {
+      pourboire = val;
+      document.querySelectorAll('.pourboire-btn').forEach(b => b.classList.remove('selected'));
+      el.classList.add('selected');
+    }
+
+    function terminer() {
+      window.location.href = 'accueil.html';
+    }
+  </script>
+</body>
+</html>
