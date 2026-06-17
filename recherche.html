@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#0A1628" />
+  <title>Go'Yaav — Recherche</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root { --night: #0A1628; --ocean: #0D2444; --mango: #FF6B2B; --mango-light: #FF8C5A; --lime: #C8F135; --white: #F7F4EE; --grey: #8A9BB0; }
+    html, body { height: 100%; background: var(--night); color: var(--white); font-family: 'Inter', sans-serif; }
+    .bg { position: fixed; inset: 0; background: radial-gradient(ellipse 80% 60% at 50% 30%, #1a3a5c 0%, #0A1628 70%); }
+    .screen { position: relative; z-index: 1; min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px 28px; max-width: 430px; margin: 0 auto; text-align: center; }
+
+    /* PHASE 1 — RECHERCHE */
+    #phaseRecherche { display: flex; flex-direction: column; align-items: center; gap: 0; }
+
+    .pulse-ring {
+      position: relative; width: 160px; height: 160px;
+      display: flex; align-items: center; justify-content: center; margin-bottom: 36px;
+    }
+
+    .pulse-ring::before, .pulse-ring::after {
+      content: ''; position: absolute; border-radius: 50%;
+      border: 2px solid var(--mango); animation: ripple 2s ease-out infinite;
+    }
+    .pulse-ring::after { animation-delay: 0.8s; }
+
+    @keyframes ripple {
+      0% { width: 60px; height: 60px; opacity: 0.8; }
+      100% { width: 160px; height: 160px; opacity: 0; }
+    }
+
+    .car-icon {
+      width: 64px; height: 64px; background: var(--mango);
+      border-radius: 50%; display: flex; align-items: center;
+      justify-content: center; font-size: 28px; z-index: 1;
+      box-shadow: 0 0 32px rgba(255,107,43,0.5);
+    }
+
+    .search-title { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 26px; margin-bottom: 10px; }
+    .search-sub { font-size: 14px; color: var(--grey); margin-bottom: 40px; line-height: 1.5; }
+
+    .route-recap {
+      background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 16px; padding: 16px 20px; width: 100%; margin-bottom: 32px; text-align: left;
+    }
+
+    .recap-row { display: flex; align-items: center; gap: 12px; }
+    .recap-row + .recap-row { margin-top: 12px; padding-top: 12px; border-top: 1px solid rgba(255,255,255,0.06); }
+    .recap-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+    .recap-dot.origin { background: var(--lime); }
+    .recap-dot.dest { background: var(--mango); }
+    .recap-label { font-size: 11px; color: var(--grey); }
+    .recap-value { font-size: 14px; font-weight: 600; color: var(--white); }
+
+    .dots-loading { display: flex; gap: 8px; justify-content: center; margin-bottom: 32px; }
+    .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--mango); animation: bounce 1.2s ease-in-out infinite; }
+    .dot:nth-child(2) { animation-delay: 0.2s; }
+    .dot:nth-child(3) { animation-delay: 0.4s; }
+    @keyframes bounce { 0%,60%,100% { transform: translateY(0); opacity: 0.4; } 30% { transform: translateY(-8px); opacity: 1; } }
+
+    .btn-annuler { background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.1); border-radius: 14px; padding: 14px 32px; font-family: 'Inter', sans-serif; font-size: 15px; color: var(--grey); cursor: pointer; width: 100%; }
+
+    /* PHASE 2 — CHAUFFEUR TROUVÉ */
+    #phaseChauffeur { display: none; flex-direction: column; align-items: center; width: 100%; }
+
+    .found-badge {
+      background: rgba(200,241,53,0.12); border: 1px solid rgba(200,241,53,0.3);
+      border-radius: 100px; padding: 8px 18px; font-size: 13px; font-weight: 600;
+      color: var(--lime); margin-bottom: 28px;
+    }
+
+    .driver-card {
+      background: var(--ocean); border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 20px; padding: 20px; width: 100%; margin-bottom: 20px;
+    }
+
+    .driver-top { display: flex; align-items: center; gap: 16px; margin-bottom: 16px; }
+
+    .driver-avatar {
+      width: 56px; height: 56px; border-radius: 50%;
+      background: linear-gradient(135deg, var(--mango), #ff9a5c);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 24px; flex-shrink: 0;
+    }
+
+    .driver-name { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 18px; }
+    .driver-rating { display: flex; align-items: center; gap: 4px; font-size: 13px; color: var(--grey); margin-top: 2px; }
+    .driver-rating span { color: #FFD700; }
+
+    .driver-info { display: flex; gap: 10px; }
+    .info-chip {
+      flex: 1; background: rgba(255,255,255,0.05); border-radius: 10px;
+      padding: 10px; text-align: center;
+    }
+    .info-chip-label { font-size: 11px; color: var(--grey); margin-bottom: 2px; }
+    .info-chip-value { font-size: 13px; font-weight: 600; color: var(--white); }
+
+    .eta-banner {
+      background: rgba(255,107,43,0.12); border: 1px solid rgba(255,107,43,0.25);
+      border-radius: 14px; padding: 14px 18px; display: flex;
+      align-items: center; justify-content: space-between; width: 100%; margin-bottom: 20px;
+    }
+
+    .eta-text { font-size: 14px; color: var(--grey); }
+    .eta-time { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 24px; color: var(--mango); }
+    .eta-unit { font-size: 12px; color: var(--grey); }
+
+    .action-btns { display: flex; gap: 12px; width: 100%; margin-bottom: 16px; }
+
+    .btn-action {
+      flex: 1; padding: 14px; border-radius: 14px; border: none;
+      font-family: 'Inter', sans-serif; font-size: 14px; font-weight: 600;
+      cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;
+    }
+
+    .btn-chat { background: rgba(255,255,255,0.07); color: var(--white); border: 1px solid rgba(255,255,255,0.1); }
+    .btn-call { background: rgba(200,241,53,0.12); color: var(--lime); border: 1px solid rgba(200,241,53,0.2); }
+
+    .btn-annuler-sm { background: transparent; border: none; font-size: 13px; color: var(--grey); cursor: pointer; text-decoration: underline; }
+
+    /* PHASE 3 — EN ROUTE */
+    #phaseEnRoute { display: none; flex-direction: column; align-items: center; width: 100%; }
+
+    .progress-bar-wrap { width: 100%; background: rgba(255,255,255,0.08); border-radius: 100px; height: 6px; margin-bottom: 8px; overflow: hidden; }
+    .progress-bar-fill { height: 100%; background: linear-gradient(to right, var(--lime), var(--mango)); border-radius: 100px; transition: width 1s linear; }
+    .progress-label { display: flex; justify-content: space-between; font-size: 12px; color: var(--grey); width: 100%; margin-bottom: 28px; }
+  </style>
+</head>
+<body>
+  <div class="bg"></div>
+  <div class="screen">
+
+    <!-- PHASE 1 : RECHERCHE -->
+    <div id="phaseRecherche">
+      <div class="pulse-ring">
+        <div class="car-icon">🚗</div>
+      </div>
+      <div class="search-title">Recherche en cours...</div>
+      <div class="search-sub">Nous trouvons le meilleur chauffeur<br/>disponible près de vous</div>
+
+      <div class="route-recap">
+        <div class="recap-row">
+          <div class="recap-dot origin"></div>
+          <div>
+            <div class="recap-label">Départ</div>
+            <div class="recap-value" id="recapDepart">—</div>
+          </div>
+        </div>
+        <div class="recap-row">
+          <div class="recap-dot dest"></div>
+          <div>
+            <div class="recap-label">Arrivée</div>
+            <div class="recap-value" id="recapArrivee">—</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="dots-loading">
+        <div class="dot"></div>
+        <div class="dot"></div>
+        <div class="dot"></div>
+      </div>
+
+      <button class="btn-annuler" onclick="window.location.href='accueil.html'">Annuler</button>
+    </div>
+
+    <!-- PHASE 2 : CHAUFFEUR TROUVÉ -->
+    <div id="phaseChauffeur">
+      <div class="found-badge">✓ Chauffeur trouvé !</div>
+
+      <div class="driver-card">
+        <div class="driver-top">
+          <div class="driver-avatar">👨🏾</div>
+          <div>
+            <div class="driver-name">Marcus T.</div>
+            <div class="driver-rating"><span>★</span> 4.9 · 847 courses</div>
+          </div>
+        </div>
+        <div class="driver-info">
+          <div class="info-chip">
+            <div class="info-chip-label">Véhicule</div>
+            <div class="info-chip-value">Toyota Yaris</div>
+          </div>
+          <div class="info-chip">
+            <div class="info-chip-label">Plaque</div>
+            <div class="info-chip-value">GP-441-BX</div>
+          </div>
+          <div class="info-chip">
+            <div class="info-chip-label">Prix</div>
+            <div class="info-chip-value" id="prixFinal">—</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="eta-banner">
+        <div>
+          <div class="eta-text">Arrivée dans</div>
+          <div style="display:flex;align-items:baseline;gap:4px;">
+            <div class="eta-time" id="etaMinutes">4</div>
+            <div class="eta-unit">min</div>
+          </div>
+        </div>
+        <div style="font-size:32px;">🚗</div>
+      </div>
+
+      <div class="action-btns">
+        <button class="btn-action btn-chat" onclick="window.location.href='chat.html'">💬 Message</button>
+        <button class="btn-action btn-call">📞 Appeler</button>
+      </div>
+
+      <button class="btn-annuler-sm" onclick="window.location.href='accueil.html'">Annuler la course</button>
+    </div>
+
+    <!-- PHASE 3 : EN ROUTE -->
+    <div id="phaseEnRoute">
+      <div style="font-size:48px;margin-bottom:20px;">🚗</div>
+      <div class="search-title">Vous êtes en route !</div>
+      <div class="search-sub" id="enRouteSub">Arrivée dans 7 min</div>
+      <div class="route-recap" style="margin-bottom:24px;">
+        <div class="recap-row">
+          <div class="recap-dot origin"></div>
+          <div><div class="recap-label">En route vers</div><div class="recap-value" id="enRouteArrivee">—</div></div>
+        </div>
+      </div>
+      <div class="progress-bar-wrap">
+        <div class="progress-bar-fill" id="progressFill" style="width:5%"></div>
+      </div>
+      <div class="progress-label">
+        <span id="progressDepart">Départ</span>
+        <span id="progressArrivee">Arrivée</span>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const depart = params.get('depart') || 'Départ';
+    const arrivee = params.get('arrivee') || 'Arrivée';
+    const prix = params.get('prix') || '—';
+
+    document.getElementById('recapDepart').textContent = depart;
+    document.getElementById('recapArrivee').textContent = arrivee;
+    document.getElementById('prixFinal').textContent = prix;
+    document.getElementById('enRouteArrivee').textContent = arrivee;
+    document.getElementById('progressDepart').textContent = depart;
+    document.getElementById('progressArrivee').textContent = arrivee;
+
+    // Simulation : après 4 secondes → chauffeur trouvé
+    setTimeout(() => {
+      document.getElementById('phaseRecherche').style.display = 'none';
+      document.getElementById('phaseChauffeur').style.display = 'flex';
+    }, 4000);
+
+    // Après 8 secondes → en route
+    setTimeout(() => {
+      document.getElementById('phaseChauffeur').style.display = 'none';
+      document.getElementById('phaseEnRoute').style.display = 'flex';
+      startProgress();
+    }, 8000);
+
+    function startProgress() {
+      let pct = 5;
+      const fill = document.getElementById('progressFill');
+      const sub = document.getElementById('enRouteSub');
+      const interval = setInterval(() => {
+        pct += 2;
+        fill.style.width = pct + '%';
+        const remaining = Math.max(0, Math.round(7 * (1 - pct/100)));
+        sub.textContent = remaining > 0 ? 'Arrivée dans ' + remaining + ' min' : 'Vous êtes arrivé(e) !';
+        if (pct >= 100) {
+          clearInterval(interval);
+          setTimeout(() => window.location.href = 'arrivee.html?depart=' + encodeURIComponent(depart) + '&arrivee=' + encodeURIComponent(arrivee) + '&prix=' + encodeURIComponent(prix), 1500);
+        }
+      }, 800);
+    }
+  </script>
+</body>
+</html>
