@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#0A1628" />
+  <title>Go'Yaav — Connexion</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root { --night: #0A1628; --ocean: #0D2444; --mango: #FF6B2B; --mango-light: #FF8C5A; --lime: #C8F135; --white: #F7F4EE; --grey: #8A9BB0; }
+    html, body { height: 100%; background: var(--night); color: var(--white); font-family: 'Inter', sans-serif; }
+    .bg { position: fixed; inset: 0; background: radial-gradient(ellipse 80% 60% at 50% 0%, #1a3a5c 0%, #0A1628 60%); }
+    .screen { position: relative; z-index: 1; min-height: 100vh; display: flex; flex-direction: column; padding: 52px 28px 48px; max-width: 430px; margin: 0 auto; }
+    .header { display: flex; align-items: center; gap: 16px; margin-bottom: 48px; }
+    .back-btn { width: 40px; height: 40px; background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; display: flex; align-items: center; justify-content: center; cursor: pointer; text-decoration: none; color: var(--white); font-size: 18px; flex-shrink: 0; }
+    .logo-text { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 22px; color: var(--white); }
+    .logo-text span { color: var(--mango); }
+    .step { display: none; flex-direction: column; flex: 1; }
+    .step.visible { display: flex; }
+    .step-title { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 30px; line-height: 1.1; margin-bottom: 8px; }
+    .step-sub { font-size: 14px; color: var(--grey); margin-bottom: 36px; line-height: 1.5; }
+    .input-label { font-size: 12px; font-weight: 600; color: var(--grey); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; display: block; }
+    .phone-row { display: flex; gap: 10px; margin-bottom: 32px; }
+    .country-select { background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); border-radius: 14px; padding: 16px 12px; font-family: 'Inter', sans-serif; font-size: 15px; font-weight: 600; color: var(--mango); outline: none; cursor: pointer; appearance: none; -webkit-appearance: none; width: 110px; flex-shrink: 0; text-align: center; }
+    .country-select:focus { border-color: var(--mango); }
+    .phone-row input { flex: 1; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); border-radius: 14px; padding: 16px; font-family: 'Inter', sans-serif; font-size: 16px; color: var(--white); outline: none; }
+    .phone-row input:focus { border-color: var(--mango); background: rgba(255,107,43,0.06); }
+    .phone-row input::placeholder { color: var(--grey); }
+    .code-inputs { display: flex; gap: 10px; justify-content: center; margin-bottom: 24px; }
+    .code-input { width: 60px; height: 68px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); border-radius: 14px; font-family: 'Syne', sans-serif; font-size: 28px; font-weight: 700; text-align: center; color: var(--white); outline: none; transition: border-color 0.2s ease; padding: 0; }
+    .code-input:focus { border-color: var(--mango); background: rgba(255,107,43,0.08); }
+    .resend { text-align: center; font-size: 13px; color: var(--grey); margin-bottom: 32px; }
+    .resend span { color: var(--mango-light); cursor: pointer; text-decoration: underline; }
+    .btn { width: 100%; padding: 18px; border-radius: 16px; font-family: 'Inter', sans-serif; font-size: 16px; font-weight: 600; border: none; cursor: pointer; background: var(--mango); color: white; box-shadow: 0 8px 32px rgba(255,107,43,0.35); transition: transform 0.15s ease; margin-bottom: 16px; }
+    .btn:active { transform: scale(0.97); }
+    .divider { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
+    .divider-line { flex: 1; height: 1px; background: rgba(255,255,255,0.08); }
+    .divider-text { font-size: 12px; color: var(--grey); }
+    .btn-inscription { width: 100%; padding: 16px; border-radius: 16px; font-family: 'Inter', sans-serif; font-size: 15px; font-weight: 500; border: 1px solid rgba(255,255,255,0.1); background: transparent; color: var(--white); cursor: pointer; text-align: center; text-decoration: none; display: block; }
+    .sms-info { text-align: center; font-size: 13px; color: var(--grey); margin-bottom: 24px; }
+    .sms-info strong { color: var(--white); }
+  </style>
+</head>
+<body>
+  <div class="bg"></div>
+  <div class="screen">
+    <div class="header">
+      <a href="index.html" class="back-btn">←</a>
+      <div class="logo-text">Go<span>'</span>Yaav</div>
+    </div>
+
+    <!-- ÉTAPE 1 — TÉLÉPHONE -->
+    <div class="step visible" id="step1">
+      <div class="step-title">Bon retour<br/>sur Go'Yaav 👋</div>
+      <div class="step-sub">Entrez votre numéro pour recevoir un code de connexion.</div>
+      <label class="input-label">Numéro de téléphone</label>
+      <div class="phone-row">
+        <select class="country-select" id="countryCode">
+          <option value="+590">🇬🇵 +590</option>
+          <option value="+596">🇲🇶 +596</option>
+          <option value="+594">🇬🇫 +594</option>
+          <option value="+262">🇷🇪 +262</option>
+          <option value="+269">🇰🇲 +269</option>
+          <option value="+1758">🇱🇨 +1758</option>
+          <option value="+1784">🇻🇨 +1784</option>
+          <option value="+1246">🇧🇧 +1246</option>
+          <option value="+1473">🇬🇩 +1473</option>
+          <option value="+1767">🇩🇲 +1767</option>
+          <option value="+1268">🇦🇬 +1268</option>
+          <option value="+1869">🇰🇳 +1869</option>
+          <option value="+509">🇭🇹 +509</option>
+          <option value="+1809">🇩🇴 +1809</option>
+          <option value="+1876">🇯🇲 +1876</option>
+          <option value="+1868">🇹🇹 +1868</option>
+          <option value="+599">🇨🇼 +599</option>
+          <option value="+53">🇨🇺 +53</option>
+          <option value="+33">🇫🇷 +33</option>
+          <option value="+1">🇺🇸 +1</option>
+        </select>
+        <input type="tel" id="phone" placeholder="690 00 00 00" maxlength="12" />
+      </div>
+      <button class="btn" onclick="goToCode()">Recevoir le code SMS</button>
+      <div class="divider"><div class="divider-line"></div><div class="divider-text">Pas encore de compte ?</div><div class="divider-line"></div></div>
+      <a href="inscription.html" class="btn-inscription">Créer un compte Go'Yaav</a>
+    </div>
+
+    <!-- ÉTAPE 2 — CODE -->
+    <div class="step" id="step2">
+      <div class="step-title">Code de<br/>vérification 🔐</div>
+      <div class="sms-info">Code envoyé au <strong id="phoneDisplay"></strong></div>
+      <div class="code-inputs">
+        <input type="number" class="code-input" maxlength="1" id="c1" oninput="nextCode(this,'c2')" />
+        <input type="number" class="code-input" maxlength="1" id="c2" oninput="nextCode(this,'c3')" />
+        <input type="number" class="code-input" maxlength="1" id="c3" oninput="nextCode(this,'c4')" />
+        <input type="number" class="code-input" maxlength="1" id="c4" oninput="nextCode(this,null)" />
+      </div>
+      <div class="resend">Pas reçu ? <span onclick="alert('Code renvoyé !')">Renvoyer le code</span></div>
+      <button class="btn" onclick="window.location.href='accueil.html'">Se connecter</button>
+    </div>
+  </div>
+
+  <script>
+    function goToCode() {
+      const code = document.getElementById('countryCode').value;
+      const phone = document.getElementById('phone').value;
+      document.getElementById('phoneDisplay').textContent = code + ' ' + phone;
+      document.getElementById('step1').classList.remove('visible');
+      document.getElementById('step2').classList.add('visible');
+      setTimeout(() => document.getElementById('c1').focus(), 100);
+    }
+
+    function nextCode(input, nextId) {
+      if (input.value.length >= 1 && nextId) {
+        document.getElementById(nextId).focus();
+      }
+    }
+  </script>
+</body>
+</html>
