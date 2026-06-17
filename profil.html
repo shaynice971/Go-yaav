@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#0A1628" />
+  <title>Go'Yaav — Mon profil</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root { --night: #0A1628; --ocean: #0D2444; --mango: #FF6B2B; --mango-light: #FF8C5A; --lime: #C8F135; --white: #F7F4EE; --grey: #8A9BB0; }
+    html, body { height: 100%; background: var(--night); color: var(--white); font-family: 'Inter', sans-serif; }
+    .bg { position: fixed; inset: 0; background: radial-gradient(ellipse 80% 60% at 50% 0%, #1a3a5c 0%, #0A1628 60%); }
+    .screen { position: relative; z-index: 1; min-height: 100vh; display: flex; flex-direction: column; padding: 52px 24px 40px; max-width: 430px; margin: 0 auto; }
+
+    .header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 32px; }
+    .back-btn { width: 40px; height: 40px; background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; display: flex; align-items: center; justify-content: center; cursor: pointer; text-decoration: none; color: var(--white); font-size: 18px; }
+    .header-title { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 20px; }
+
+    .avatar-section { display: flex; flex-direction: column; align-items: center; margin-bottom: 28px; }
+    .avatar { width: 80px; height: 80px; border-radius: 50%; background: linear-gradient(135deg, var(--mango), #ff9a5c); display: flex; align-items: center; justify-content: center; font-size: 36px; margin-bottom: 12px; border: 3px solid rgba(255,107,43,0.3); }
+    .avatar-name { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 22px; }
+    .avatar-phone { font-size: 14px; color: var(--grey); margin-top: 4px; }
+    .avatar-edit { font-size: 13px; color: var(--mango-light); cursor: pointer; text-decoration: underline; margin-top: 8px; }
+
+    .stats-row { display: flex; gap: 12px; margin-bottom: 24px; }
+    .stat-card { flex: 1; background: var(--ocean); border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; padding: 16px; text-align: center; }
+    .stat-value { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 22px; color: var(--white); }
+    .stat-label { font-size: 12px; color: var(--grey); margin-top: 4px; }
+
+    .section-title { font-size: 12px; font-weight: 600; color: var(--grey); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 12px; }
+
+    .menu-card { background: var(--ocean); border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; margin-bottom: 16px; overflow: hidden; }
+    .menu-item { display: flex; align-items: center; gap: 14px; padding: 16px; cursor: pointer; transition: background 0.15s ease; border-bottom: 1px solid rgba(255,255,255,0.05); }
+    .menu-item:last-child { border-bottom: none; }
+    .menu-item:active { background: rgba(255,255,255,0.04); }
+    .menu-icon { width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
+    .menu-icon.orange { background: rgba(255,107,43,0.15); }
+    .menu-icon.blue { background: rgba(29,78,216,0.15); }
+    .menu-icon.green { background: rgba(200,241,53,0.12); }
+    .menu-icon.red { background: rgba(255,77,77,0.12); }
+    .menu-text { flex: 1; }
+    .menu-name { font-size: 15px; font-weight: 500; color: var(--white); }
+    .menu-desc { font-size: 12px; color: var(--grey); margin-top: 2px; }
+    .menu-arrow { font-size: 14px; color: var(--grey); }
+
+    .she-rides-toggle { display: flex; align-items: center; justify-content: space-between; padding: 16px; background: var(--ocean); border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; margin-bottom: 16px; }
+    .toggle-info { display: flex; align-items: center; gap: 12px; }
+    .toggle-icon { font-size: 24px; }
+    .toggle-name { font-size: 15px; font-weight: 600; }
+    .toggle-desc { font-size: 12px; color: var(--grey); margin-top: 2px; }
+    .toggle-switch { width: 48px; height: 28px; background: var(--mango); border-radius: 100px; position: relative; cursor: pointer; transition: background 0.2s ease; }
+    .toggle-switch.off { background: rgba(255,255,255,0.15); }
+    .toggle-knob { width: 22px; height: 22px; background: white; border-radius: 50%; position: absolute; top: 3px; right: 3px; transition: right 0.2s ease; box-shadow: 0 1px 4px rgba(0,0,0,0.3); }
+    .toggle-switch.off .toggle-knob { right: auto; left: 3px; }
+
+    .btn-deconnexion { width: 100%; padding: 16px; border-radius: 16px; font-family: 'Inter', sans-serif; font-size: 15px; font-weight: 600; border: 1px solid rgba(255,77,77,0.3); background: rgba(255,77,77,0.08); color: #ff6b6b; cursor: pointer; margin-top: 8px; }
+  </style>
+</head>
+<body>
+  <div class="bg"></div>
+  <div class="screen">
+
+    <div class="header">
+      <a href="accueil.html" class="back-btn">←</a>
+      <div class="header-title">Mon profil</div>
+      <div style="width:40px"></div>
+    </div>
+
+    <div class="avatar-section">
+      <div class="avatar">👤</div>
+      <div class="avatar-name">Marie D.</div>
+      <div class="avatar-phone">+590 690 12 34 56</div>
+      <div class="avatar-edit">Modifier mon profil</div>
+    </div>
+
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="stat-value">12</div>
+        <div class="stat-label">Courses</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value">⭐ 4.8</div>
+        <div class="stat-label">Ma note</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value">87€</div>
+        <div class="stat-label">Dépensé</div>
+      </div>
+    </div>
+
+    <!-- SHE RIDES -->
+    <div class="section-title">Sécurité</div>
+    <div class="she-rides-toggle" onclick="toggleSheRides()">
+      <div class="toggle-info">
+        <div class="toggle-icon">👩</div>
+        <div>
+          <div class="toggle-name">She Rides</div>
+          <div class="toggle-desc">Chauffeurs femmes uniquement</div>
+        </div>
+      </div>
+      <div class="toggle-switch" id="sheToggle">
+        <div class="toggle-knob"></div>
+      </div>
+    </div>
+
+    <!-- MENU -->
+    <div class="section-title">Mon compte</div>
+    <div class="menu-card">
+      <div class="menu-item">
+        <div class="menu-icon orange">🚗</div>
+        <div class="menu-text">
+          <div class="menu-name">Mes courses</div>
+          <div class="menu-desc">Historique et reçus</div>
+        </div>
+        <div class="menu-arrow">›</div>
+      </div>
+      <div class="menu-item">
+        <div class="menu-icon blue">💳</div>
+        <div class="menu-text">
+          <div class="menu-name">Paiement</div>
+          <div class="menu-desc">Carte bancaire · Apple Pay · Espèces</div>
+        </div>
+        <div class="menu-arrow">›</div>
+      </div>
+      <div class="menu-item">
+        <div class="menu-icon green">🎁</div>
+        <div class="menu-text">
+          <div class="menu-name">Codes promo</div>
+          <div class="menu-desc">Ajouter un code de réduction</div>
+        </div>
+        <div class="menu-arrow">›</div>
+      </div>
+      <div class="menu-item">
+        <div class="menu-icon orange">📱</div>
+        <div class="menu-text">
+          <div class="menu-name">Notifications</div>
+          <div class="menu-desc">Gérer mes alertes</div>
+        </div>
+        <div class="menu-arrow">›</div>
+      </div>
+    </div>
+
+    <div class="section-title">Aide</div>
+    <div class="menu-card">
+      <div class="menu-item">
+        <div class="menu-icon blue">❓</div>
+        <div class="menu-text">
+          <div class="menu-name">Centre d'aide</div>
+          <div class="menu-desc">FAQ et support</div>
+        </div>
+        <div class="menu-arrow">›</div>
+      </div>
+      <div class="menu-item">
+        <div class="menu-icon green">⭐</div>
+        <div class="menu-text">
+          <div class="menu-name">Noter l'app</div>
+          <div class="menu-desc">Donnez votre avis sur Go'Yaav</div>
+        </div>
+        <div class="menu-arrow">›</div>
+      </div>
+      <div class="menu-item">
+        <div class="menu-icon red">🔒</div>
+        <div class="menu-text">
+          <div class="menu-name">Confidentialité</div>
+          <div class="menu-desc">RGPD · Politique de données</div>
+        </div>
+        <div class="menu-arrow">›</div>
+      </div>
+    </div>
+
+    <button class="btn-deconnexion" onclick="window.location.href='index.html'">Se déconnecter</button>
+
+  </div>
+
+  <script>
+    let sheRidesOn = true;
+    function toggleSheRides() {
+      sheRidesOn = !sheRidesOn;
+      const toggle = document.getElementById('sheToggle');
+      toggle.classList.toggle('off', !sheRidesOn);
+    }
+  </script>
+</body>
+</html>
