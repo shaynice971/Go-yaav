@@ -3,434 +3,73 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="theme-color" content="#0A1628" />
   <title>Go'Yaav — Inscription</title>
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-    :root {
-      --night: #0A1628;
-      --ocean: #0D2444;
-      --mango: #FF6B2B;
-      --mango-light: #FF8C5A;
-      --lime: #C8F135;
-      --white: #F7F4EE;
-      --grey: #8A9BB0;
-      --error: #FF4D4D;
-      --success: #4CAF50;
-    }
-
-    html, body {
-      height: 100%;
-      background: var(--night);
-      color: var(--white);
-      font-family: 'Inter', sans-serif;
-      overflow-x: hidden;
-    }
-
-    .bg {
-      position: fixed;
-      inset: 0;
-      z-index: 0;
-      background: radial-gradient(ellipse 80% 60% at 50% 0%, #1a3a5c 0%, #0A1628 60%);
-    }
-
-    .screen {
-      position: relative;
-      z-index: 1;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      padding: 52px 28px 48px;
-      max-width: 430px;
-      margin: 0 auto;
-    }
-
-    /* HEADER */
-    .header {
-      display: flex;
-      align-items: center;
-      gap: 16px;
-      margin-bottom: 40px;
-    }
-
-    .back-btn {
-      width: 40px;
-      height: 40px;
-      background: rgba(255,255,255,0.07);
-      border: 1px solid rgba(255,255,255,0.1);
-      border-radius: 12px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      text-decoration: none;
-      color: var(--white);
-      font-size: 18px;
-      flex-shrink: 0;
-    }
-
-    .logo-text {
-      font-family: 'Syne', sans-serif;
-      font-weight: 800;
-      font-size: 22px;
-      color: var(--white);
-    }
-
+    :root { --night: #0A1628; --ocean: #0D2444; --mango: #FF6B2B; --mango-light: #FF8C5A; --lime: #C8F135; --white: #F7F4EE; --grey: #8A9BB0; }
+    html, body { height: 100%; background: var(--night); color: var(--white); font-family: 'Inter', sans-serif; }
+    .bg { position: fixed; inset: 0; background: radial-gradient(ellipse 80% 60% at 50% 0%, #1a3a5c 0%, #0A1628 60%); }
+    .screen { position: relative; z-index: 1; min-height: 100vh; display: flex; flex-direction: column; padding: 52px 28px 48px; max-width: 430px; margin: 0 auto; }
+    .header { display: flex; align-items: center; gap: 16px; margin-bottom: 40px; }
+    .back-btn { width: 40px; height: 40px; background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; display: flex; align-items: center; justify-content: center; cursor: pointer; text-decoration: none; color: var(--white); font-size: 18px; flex-shrink: 0; }
+    .logo-text { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 22px; color: var(--white); }
     .logo-text span { color: var(--mango); }
-
-    /* PROGRESS */
-    .progress {
-      display: flex;
-      gap: 6px;
-      margin-bottom: 36px;
-    }
-
-    .progress-step {
-      flex: 1;
-      height: 3px;
-      border-radius: 2px;
-      background: rgba(255,255,255,0.1);
-      transition: background 0.3s ease;
-    }
-
+    .progress { display: flex; gap: 6px; margin-bottom: 36px; }
+    .progress-step { flex: 1; height: 3px; border-radius: 2px; background: rgba(255,255,255,0.1); transition: background 0.3s ease; }
     .progress-step.active { background: var(--mango); }
     .progress-step.done { background: var(--lime); }
-
-    /* STEPS */
     .step { display: none; flex-direction: column; flex: 1; }
     .step.visible { display: flex; }
-
-    .step-title {
-      font-family: 'Syne', sans-serif;
-      font-weight: 800;
-      font-size: 28px;
-      line-height: 1.1;
-      margin-bottom: 8px;
-    }
-
-    .step-sub {
-      font-size: 14px;
-      color: var(--grey);
-      margin-bottom: 36px;
-      line-height: 1.5;
-    }
-
-    /* INPUTS */
-    .input-group {
-      margin-bottom: 16px;
-    }
-
-    .input-label {
-      font-size: 12px;
-      font-weight: 600;
-      color: var(--grey);
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      margin-bottom: 8px;
-      display: block;
-    }
-
-    .input-wrap {
-      position: relative;
-    }
-
-    .input-prefix {
-      position: absolute;
-      left: 16px;
-      top: 50%;
-      transform: translateY(-50%);
-      font-size: 15px;
-      font-weight: 600;
-      color: var(--mango);
-    }
-
-    input {
-      width: 100%;
-      background: rgba(255,255,255,0.06);
-      border: 1px solid rgba(255,255,255,0.1);
-      border-radius: 14px;
-      padding: 16px 16px 16px 16px;
-      font-family: 'Inter', sans-serif;
-      font-size: 16px;
-      color: var(--white);
-      outline: none;
-      transition: border-color 0.2s ease;
-    }
-
-    input.has-prefix { padding-left: 52px; }
-
-    /* PHONE ROW */
-    .phone-row {
-      display: flex;
-      gap: 10px;
-    }
-
-    .country-select {
-      background: rgba(255,255,255,0.06);
-      border: 1px solid rgba(255,255,255,0.1);
-      border-radius: 14px;
-      padding: 16px 12px;
-      font-family: 'Inter', sans-serif;
-      font-size: 15px;
-      font-weight: 600;
-      color: var(--mango);
-      outline: none;
-      cursor: pointer;
-      transition: border-color 0.2s ease;
-      appearance: none;
-      -webkit-appearance: none;
-      width: 110px;
-      flex-shrink: 0;
-      text-align: center;
-    }
-
-    .country-select:focus {
-      border-color: var(--mango);
-      background: rgba(255,107,43,0.06);
-    }
-
-    .phone-row input {
-      flex: 1;
-    }
-
+    .step-title { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 28px; line-height: 1.1; margin-bottom: 8px; }
+    .step-sub { font-size: 14px; color: var(--grey); margin-bottom: 36px; line-height: 1.5; }
+    .input-group { margin-bottom: 16px; }
+    .input-label { font-size: 12px; font-weight: 600; color: var(--grey); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; display: block; }
+    input, select { width: 100%; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); border-radius: 14px; padding: 16px; font-family: 'Inter', sans-serif; font-size: 16px; color: var(--white); outline: none; transition: border-color 0.2s ease; appearance: none; -webkit-appearance: none; }
     input::placeholder { color: var(--grey); }
-
-    input:focus {
-      border-color: var(--mango);
-      background: rgba(255,107,43,0.06);
-    }
-
-    /* CODE SMS */
-    .code-inputs {
-      display: flex;
-      gap: 10px;
-      justify-content: center;
-      margin-bottom: 24px;
-    }
-
-    .code-input {
-      width: 52px;
-      height: 60px;
-      background: rgba(255,255,255,0.06);
-      border: 1px solid rgba(255,255,255,0.1);
-      border-radius: 14px;
-      font-family: 'Syne', sans-serif;
-      font-size: 24px;
-      font-weight: 700;
-      text-align: center;
-      color: var(--white);
-      outline: none;
-      transition: border-color 0.2s ease;
-      padding: 0;
-    }
-
-    .code-input:focus {
-      border-color: var(--mango);
-      background: rgba(255,107,43,0.08);
-    }
-
-    .resend {
-      text-align: center;
-      font-size: 13px;
-      color: var(--grey);
-      margin-bottom: 32px;
-    }
-
-    .resend span {
-      color: var(--mango-light);
-      cursor: pointer;
-      text-decoration: underline;
-    }
-
-    /* PAYMENT */
-    .payment-options {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-      margin-bottom: 24px;
-    }
-
-    .payment-option {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-      background: rgba(255,255,255,0.06);
-      border: 1px solid rgba(255,255,255,0.1);
-      border-radius: 14px;
-      padding: 16px;
-      cursor: pointer;
-      transition: border-color 0.2s ease, background 0.2s ease;
-    }
-
-    .payment-option.selected {
-      border-color: var(--mango);
-      background: rgba(255,107,43,0.08);
-    }
-
-    .payment-icon {
-      font-size: 24px;
-      width: 40px;
-      text-align: center;
-    }
-
+    input:focus, select:focus { border-color: var(--mango); background: rgba(255,107,43,0.06); }
+    .phone-row { display: flex; gap: 10px; }
+    .country-select { width: 120px; flex-shrink: 0; font-weight: 600; color: var(--mango); text-align: center; }
+    .phone-row input { flex: 1; }
+    .code-inputs { display: flex; gap: 10px; justify-content: center; margin-bottom: 24px; }
+    .code-input { width: 60px; height: 68px; font-family: 'Syne', sans-serif; font-size: 28px; font-weight: 700; text-align: center; padding: 0; }
+    .resend { text-align: center; font-size: 13px; color: var(--grey); margin-bottom: 32px; }
+    .resend span { color: var(--mango-light); cursor: pointer; text-decoration: underline; }
+    .payment-options { display: flex; flex-direction: column; gap: 12px; margin-bottom: 24px; }
+    .payment-option { display: flex; align-items: center; gap: 14px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); border-radius: 14px; padding: 16px; cursor: pointer; transition: all 0.2s ease; }
+    .payment-option.selected { background: rgba(255,107,43,0.08); border-color: var(--mango); }
+    .payment-icon { font-size: 24px; width: 40px; text-align: center; }
     .payment-info { flex: 1; }
-
-    .payment-name {
-      font-size: 15px;
-      font-weight: 600;
-      color: var(--white);
-    }
-
-    .payment-desc {
-      font-size: 12px;
-      color: var(--grey);
-      margin-top: 2px;
-    }
-
-    .payment-radio {
-      width: 20px;
-      height: 20px;
-      border-radius: 50%;
-      border: 2px solid rgba(255,255,255,0.2);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: border-color 0.2s ease;
-    }
-
-    .payment-option.selected .payment-radio {
-      border-color: var(--mango);
-    }
-
-    .payment-option.selected .payment-radio::after {
-      content: '';
-      width: 10px;
-      height: 10px;
-      border-radius: 50%;
-      background: var(--mango);
-    }
-
-    /* CARD FORM */
-    .card-form {
-      display: none;
-      flex-direction: column;
-      gap: 12px;
-      margin-top: 16px;
-      padding: 16px;
-      background: rgba(255,255,255,0.04);
-      border-radius: 14px;
-      border: 1px solid rgba(255,255,255,0.08);
-    }
-
+    .payment-name { font-size: 15px; font-weight: 600; }
+    .payment-desc { font-size: 12px; color: var(--grey); margin-top: 2px; }
+    .payment-radio { width: 20px; height: 20px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center; }
+    .payment-option.selected .payment-radio { border-color: var(--mango); }
+    .payment-option.selected .payment-radio::after { content: ''; width: 10px; height: 10px; border-radius: 50%; background: var(--mango); }
+    .card-form { display: none; flex-direction: column; gap: 12px; margin-top: 16px; padding: 16px; background: rgba(255,255,255,0.04); border-radius: 14px; border: 1px solid rgba(255,255,255,0.08); }
     .card-form.visible { display: flex; }
-
-    .card-row {
-      display: flex;
-      gap: 12px;
-    }
-
+    .card-row { display: flex; gap: 12px; }
     .card-row .input-group { flex: 1; margin-bottom: 0; }
-
-    /* SKIP */
-    .skip-btn {
-      text-align: center;
-      font-size: 13px;
-      color: var(--grey);
-      cursor: pointer;
-      margin-top: 12px;
-    }
-
-    .skip-btn span {
-      color: var(--mango-light);
-      text-decoration: underline;
-    }
-
-    /* SUCCESS */
-    .success-wrap {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      gap: 16px;
-    }
-
-    .success-icon {
-      width: 80px;
-      height: 80px;
-      background: rgba(200,241,53,0.15);
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 36px;
-      margin-bottom: 8px;
-    }
-
-    .success-title {
-      font-family: 'Syne', sans-serif;
-      font-weight: 800;
-      font-size: 28px;
-    }
-
-    .success-sub {
-      font-size: 15px;
-      color: var(--grey);
-      max-width: 260px;
-      line-height: 1.5;
-    }
-
-    /* BOTTOM */
+    .skip-btn { text-align: center; font-size: 13px; color: var(--grey); cursor: pointer; margin-top: 12px; }
+    .skip-btn span { color: var(--mango-light); text-decoration: underline; }
+    .success-wrap { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; gap: 16px; }
+    .success-icon { width: 80px; height: 80px; background: rgba(200,241,53,0.15); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 36px; }
+    .success-title { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 28px; }
+    .success-sub { font-size: 15px; color: var(--grey); max-width: 260px; line-height: 1.5; }
     .bottom { margin-top: auto; padding-top: 24px; }
-
-    .btn {
-      width: 100%;
-      padding: 18px;
-      border-radius: 16px;
-      font-family: 'Inter', sans-serif;
-      font-size: 16px;
-      font-weight: 600;
-      border: none;
-      cursor: pointer;
-      transition: transform 0.15s ease, opacity 0.15s ease;
-      background: var(--mango);
-      color: white;
-      box-shadow: 0 8px 32px rgba(255,107,43,0.35);
-    }
-
+    .btn { width: 100%; padding: 18px; border-radius: 16px; font-family: 'Inter', sans-serif; font-size: 16px; font-weight: 600; border: none; cursor: pointer; background: var(--mango); color: white; box-shadow: 0 8px 32px rgba(255,107,43,0.35); transition: transform 0.15s ease; text-decoration: none; display: block; text-align: center; }
     .btn:active { transform: scale(0.97); }
-
-    .btn:disabled {
-      opacity: 0.4;
-      cursor: not-allowed;
-      transform: none;
-    }
-
-    .terms {
-      text-align: center;
-      font-size: 11px;
-      color: var(--grey);
-      margin-top: 12px;
-      line-height: 1.5;
-    }
-
+    .terms { text-align: center; font-size: 11px; color: var(--grey); margin-top: 12px; line-height: 1.5; }
     .terms a { color: var(--mango-light); }
+    .error-msg { color: #ff6b6b; font-size: 13px; margin-top: 4px; display: none; }
   </style>
 </head>
 <body>
   <div class="bg"></div>
-
   <div class="screen">
-    <!-- HEADER -->
     <div class="header">
       <a href="index.html" class="back-btn" id="backBtn">←</a>
       <div class="logo-text">Go<span>'</span>Yaav</div>
     </div>
-
-    <!-- PROGRESS -->
     <div class="progress">
       <div class="progress-step active" id="p1"></div>
       <div class="progress-step" id="p2"></div>
@@ -442,11 +81,10 @@
     <div class="step visible" id="step1">
       <div class="step-title">Votre numéro<br/>de téléphone</div>
       <div class="step-sub">Vous recevrez un code de vérification par SMS.</div>
-
       <div class="input-group">
         <label class="input-label">Numéro de téléphone</label>
         <div class="phone-row">
-          <select class="country-select" id="countryCode" onchange="updateSmsSubtitle()">
+          <select class="country-select" id="countryCode">
             <option value="+590">🇬🇵 +590</option>
             <option value="+596">🇲🇶 +596</option>
             <option value="+594">🇬🇫 +594</option>
@@ -456,9 +94,6 @@
             <option value="+1784">🇻🇨 +1784</option>
             <option value="+1246">🇧🇧 +1246</option>
             <option value="+1473">🇬🇩 +1473</option>
-            <option value="+1767">🇩🇲 +1767</option>
-            <option value="+1268">🇦🇬 +1268</option>
-            <option value="+1869">🇰🇳 +1869</option>
             <option value="+509">🇭🇹 +509</option>
             <option value="+1809">🇩🇴 +1809</option>
             <option value="+1876">🇯🇲 +1876</option>
@@ -468,12 +103,12 @@
             <option value="+33">🇫🇷 +33</option>
             <option value="+1">🇺🇸 +1</option>
           </select>
-          <input type="tel" id="phone" placeholder="690 00 00 00" maxlength="12" oninput="updateSmsSubtitle()" />
+          <input type="tel" id="phone" placeholder="690 00 00 00" maxlength="12" />
         </div>
+        <div class="error-msg" id="phoneError">Veuillez entrer un numéro valide</div>
       </div>
-
       <div class="bottom">
-        <button class="btn" onclick="goToStep(2)">Recevoir le code</button>
+        <button class="btn" onclick="validatePhone()">Recevoir le code</button>
         <div class="terms">En continuant, vous acceptez nos <a href="#">CGU</a> et notre <a href="#">politique de confidentialité</a>.</div>
       </div>
     </div>
@@ -481,107 +116,78 @@
     <!-- ÉTAPE 2 — CODE SMS -->
     <div class="step" id="step2">
       <div class="step-title">Code de<br/>vérification</div>
-      <div class="step-sub" id="smsSubtitle">Un code à 4 chiffres a été envoyé au +590 690 00 00 00</div>
-
+      <div class="step-sub" id="smsSubtitle">Code envoyé</div>
       <div class="code-inputs">
-        <input type="number" class="code-input" maxlength="1" id="c1" oninput="nextCode(this, 'c2')" />
-        <input type="number" class="code-input" maxlength="1" id="c2" oninput="nextCode(this, 'c3')" />
-        <input type="number" class="code-input" maxlength="1" id="c3" oninput="nextCode(this, 'c4')" />
-        <input type="number" class="code-input" maxlength="1" id="c4" oninput="nextCode(this, null)" />
+        <input type="number" class="code-input" maxlength="1" id="c1" oninput="nextCode(this,'c2')" />
+        <input type="number" class="code-input" maxlength="1" id="c2" oninput="nextCode(this,'c3')" />
+        <input type="number" class="code-input" maxlength="1" id="c3" oninput="nextCode(this,'c4')" />
+        <input type="number" class="code-input" maxlength="1" id="c4" oninput="nextCode(this,null)" />
       </div>
-
-      <div class="resend">Vous n'avez pas reçu le code ? <span onclick="resendCode()">Renvoyer</span></div>
-
+      <div class="resend">Pas reçu ? <span onclick="alert('Code renvoyé !')">Renvoyer</span></div>
       <div class="bottom">
-        <button class="btn" onclick="goToStep(3)">Vérifier</button>
+        <button class="btn" onclick="validateCode()">Vérifier</button>
       </div>
     </div>
 
-    <!-- ÉTAPE 3 — NOM & PRÉNOM -->
+    <!-- ÉTAPE 3 — IDENTITÉ -->
     <div class="step" id="step3">
       <div class="step-title">Votre<br/>identité</div>
-      <div class="step-sub">Ces informations apparaîtront sur votre profil Go'Yaav.</div>
-
+      <div class="step-sub">Ces informations apparaîtront sur votre profil.</div>
       <div class="input-group">
         <label class="input-label">Prénom</label>
         <input type="text" id="firstname" placeholder="Marie" />
+        <div class="error-msg" id="firstnameError">Veuillez entrer votre prénom</div>
       </div>
-
       <div class="input-group">
         <label class="input-label">Nom</label>
         <input type="text" id="lastname" placeholder="Dupont" />
+        <div class="error-msg" id="lastnameError">Veuillez entrer votre nom</div>
       </div>
-
       <div class="input-group">
         <label class="input-label">Date de naissance</label>
         <input type="date" id="birthdate" />
       </div>
-
+      <div class="input-group">
+        <label class="input-label">Email (facultatif)</label>
+        <input type="email" id="email" placeholder="marie@email.com" />
+      </div>
       <div class="bottom">
-        <button class="btn" onclick="goToStep(4)">Continuer</button>
+        <button class="btn" onclick="validateIdentity()">Continuer</button>
       </div>
     </div>
 
     <!-- ÉTAPE 4 — PAIEMENT -->
     <div class="step" id="step4">
       <div class="step-title">Moyen de<br/>paiement</div>
-      <div class="step-sub">Ajoutez un moyen de paiement pour régler vos courses facilement.</div>
-
+      <div class="step-sub">Ajoutez un moyen de paiement pour vos courses.</div>
       <div class="payment-options">
         <div class="payment-option" id="opt-card" onclick="selectPayment('card')">
           <div class="payment-icon">💳</div>
-          <div class="payment-info">
-            <div class="payment-name">Carte bancaire</div>
-            <div class="payment-desc">Visa, Mastercard, CB</div>
-          </div>
+          <div class="payment-info"><div class="payment-name">Carte bancaire</div><div class="payment-desc">Visa, Mastercard, CB</div></div>
           <div class="payment-radio"></div>
         </div>
-
         <div class="payment-option" id="opt-apple" onclick="selectPayment('apple')">
           <div class="payment-icon">🍎</div>
-          <div class="payment-info">
-            <div class="payment-name">Apple Pay</div>
-            <div class="payment-desc">Paiement rapide et sécurisé</div>
-          </div>
+          <div class="payment-info"><div class="payment-name">Apple Pay</div><div class="payment-desc">Paiement rapide et sécurisé</div></div>
           <div class="payment-radio"></div>
         </div>
-
         <div class="payment-option" id="opt-cash" onclick="selectPayment('cash')">
           <div class="payment-icon">💵</div>
-          <div class="payment-info">
-            <div class="payment-name">Espèces</div>
-            <div class="payment-desc">Payez directement au chauffeur</div>
-          </div>
+          <div class="payment-info"><div class="payment-name">Espèces</div><div class="payment-desc">Payez directement au chauffeur</div></div>
           <div class="payment-radio"></div>
         </div>
       </div>
-
-      <!-- FORMULAIRE CARTE -->
       <div class="card-form" id="cardForm">
-        <div class="input-group">
-          <label class="input-label">Numéro de carte</label>
-          <input type="text" placeholder="1234 5678 9012 3456" maxlength="19" />
-        </div>
+        <div class="input-group"><label class="input-label">Numéro de carte</label><input type="text" placeholder="1234 5678 9012 3456" maxlength="19" id="cardNumber" /></div>
         <div class="card-row">
-          <div class="input-group">
-            <label class="input-label">Expiration</label>
-            <input type="text" placeholder="MM/AA" maxlength="5" />
-          </div>
-          <div class="input-group">
-            <label class="input-label">CVV</label>
-            <input type="text" placeholder="123" maxlength="3" />
-          </div>
+          <div class="input-group"><label class="input-label">Expiration</label><input type="text" placeholder="MM/AA" maxlength="5" id="cardExpiry" /></div>
+          <div class="input-group"><label class="input-label">CVV</label><input type="text" placeholder="123" maxlength="3" id="cardCvv" /></div>
         </div>
-        <div class="input-group">
-          <label class="input-label">Nom sur la carte</label>
-          <input type="text" placeholder="MARIE DUPONT" />
-        </div>
+        <div class="input-group"><label class="input-label">Nom sur la carte</label><input type="text" id="cardName" placeholder="MARIE DUPONT" /></div>
       </div>
-
-      <div class="skip-btn" onclick="goToSuccess()"><span>Passer cette étape</span> — je paierai en espèces</div>
-
+      <div class="skip-btn" onclick="finishRegistration('cash')"><span>Passer</span> — je paierai en espèces</div>
       <div class="bottom">
-        <button class="btn" onclick="goToSuccess()">Créer mon compte</button>
+        <button class="btn" onclick="finishRegistration(selectedPayment)">Créer mon compte</button>
       </div>
     </div>
 
@@ -589,71 +195,97 @@
     <div class="step" id="stepSuccess">
       <div class="success-wrap">
         <div class="success-icon">🌴</div>
-        <div class="success-title">Bienvenue sur<br/>Go'Yaav !</div>
+        <div class="success-title" id="successTitle">Bienvenue !</div>
         <div class="success-sub">Votre compte est créé. Vous pouvez maintenant commander votre première course.</div>
       </div>
       <div class="bottom">
-        <a href="accueil.html" class="btn" style="text-decoration:none; display:block; text-align:center;">Trouver un chauffeur</a>
+        <a href="accueil.html" class="btn">Trouver un chauffeur</a>
       </div>
     </div>
   </div>
 
   <script>
     let currentStep = 1;
+    let selectedPayment = 'cash';
+    let userData = {};
 
     function goToStep(step) {
       document.getElementById('step' + currentStep).classList.remove('visible');
       currentStep = step;
-      document.getElementById('step' + step).classList.add('visible');
-      updateProgress(step);
-      if (step > 1) {
-        document.getElementById('backBtn').onclick = () => goToStep(step - 1);
+      if (step === 'Success') {
+        document.getElementById('stepSuccess').classList.add('visible');
+        updateProgress(5);
       } else {
-        document.getElementById('backBtn').href = 'index.html';
+        document.getElementById('step' + step).classList.add('visible');
+        updateProgress(step);
       }
-    }
-
-    function goToSuccess() {
-      document.getElementById('step' + currentStep).classList.remove('visible');
-      document.getElementById('stepSuccess').classList.add('visible');
-      updateProgress(5);
     }
 
     function updateProgress(step) {
       for (let i = 1; i <= 4; i++) {
         const el = document.getElementById('p' + i);
-        if (i < step) { el.className = 'progress-step done'; }
-        else if (i === step) { el.className = 'progress-step active'; }
-        else { el.className = 'progress-step'; }
+        if (i < step) el.className = 'progress-step done';
+        else if (i === step) el.className = 'progress-step active';
+        else el.className = 'progress-step';
       }
     }
 
-    function nextCode(input, nextId) {
-      if (input.value.length >= 1 && nextId) {
-        document.getElementById(nextId).focus();
+    function validatePhone() {
+      const phone = document.getElementById('phone').value.trim();
+      const code = document.getElementById('countryCode').value;
+      if (phone.length < 8) {
+        document.getElementById('phoneError').style.display = 'block';
+        return;
       }
+      document.getElementById('phoneError').style.display = 'none';
+      userData.phone = code + ' ' + phone;
+      document.getElementById('smsSubtitle').textContent = 'Code envoyé au ' + userData.phone;
+      goToStep(2);
     }
 
-    function resendCode() {
-      alert('Code renvoyé !');
+    function validateCode() {
+      const code = ['c1','c2','c3','c4'].map(id => document.getElementById(id).value).join('');
+      if (code.length < 4) { alert('Entrez les 4 chiffres du code'); return; }
+      goToStep(3);
+    }
+
+    function validateIdentity() {
+      const prenom = document.getElementById('firstname').value.trim();
+      const nom = document.getElementById('lastname').value.trim();
+      let valid = true;
+      if (!prenom) { document.getElementById('firstnameError').style.display = 'block'; valid = false; }
+      else document.getElementById('firstnameError').style.display = 'none';
+      if (!nom) { document.getElementById('lastnameError').style.display = 'block'; valid = false; }
+      else document.getElementById('lastnameError').style.display = 'none';
+      if (!valid) return;
+      userData.prenom = prenom;
+      userData.nom = nom;
+      userData.birthdate = document.getElementById('birthdate').value;
+      userData.email = document.getElementById('email').value.trim();
+      goToStep(4);
+    }
+
+    function finishRegistration(paymentType) {
+      userData.paiement = paymentType || 'cash';
+      userData.sheRides = false;
+      userData.courses = [];
+      userData.totalDepense = 0;
+      userData.note = 5.0;
+      userData.createdAt = new Date().toISOString();
+      localStorage.setItem('goyaav_user', JSON.stringify(userData));
+      document.getElementById('successTitle').textContent = 'Bienvenue ' + userData.prenom + ' ! 🌴';
+      goToStep('Success');
     }
 
     function selectPayment(type) {
+      selectedPayment = type;
       document.querySelectorAll('.payment-option').forEach(o => o.classList.remove('selected'));
       document.getElementById('opt-' + type).classList.add('selected');
-      const cardForm = document.getElementById('cardForm');
-      if (type === 'card') {
-        cardForm.classList.add('visible');
-      } else {
-        cardForm.classList.remove('visible');
-      }
+      document.getElementById('cardForm').classList.toggle('visible', type === 'card');
     }
 
-    function updateSmsSubtitle() {
-      const code = document.getElementById("countryCode").value;
-      const num = document.getElementById("phone").value;
-      document.getElementById("smsSubtitle").textContent =
-        "Un code à 4 chiffres a été envoyé au " + code + " " + num;
+    function nextCode(input, nextId) {
+      if (input.value.length >= 1 && nextId) document.getElementById(nextId).focus();
     }
   </script>
 </body>
