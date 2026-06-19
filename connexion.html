@@ -3,42 +3,46 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Go'Yaav — Connexion</title>
-  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <title>Go'Yaav – Connexion</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    :root { --night: #0A1628; --ocean: #0D2444; --mango: #FF6B2B; --mango-light: #FF8C5A; --lime: #C8F135; --white: #F7F4EE; --grey: #8A9BB0; }
-    html, body { height: 100%; background: var(--night); color: var(--white); font-family: 'Inter', sans-serif; }
-    .bg { position: fixed; inset: 0; background: radial-gradient(ellipse 80% 60% at 50% 0%, #1a3a5c 0%, #0A1628 60%); }
-    .screen { position: relative; z-index: 1; min-height: 100vh; display: flex; flex-direction: column; padding: 52px 28px 48px; max-width: 430px; margin: 0 auto; }
-    .header { display: flex; align-items: center; gap: 16px; margin-bottom: 48px; }
-    .back-btn { width: 40px; height: 40px; background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; display: flex; align-items: center; justify-content: center; cursor: pointer; text-decoration: none; color: var(--white); font-size: 18px; flex-shrink: 0; }
-    .logo-text { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 22px; color: var(--white); }
-    .logo-text span { color: var(--mango); }
-    .step { display: none; flex-direction: column; flex: 1; }
-    .step.visible { display: flex; }
-    .step-title { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 30px; line-height: 1.1; margin-bottom: 8px; }
-    .step-sub { font-size: 14px; color: var(--grey); margin-bottom: 36px; line-height: 1.5; }
-    .input-label { font-size: 12px; font-weight: 600; color: var(--grey); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; display: block; }
-    .phone-row { display: flex; gap: 10px; margin-bottom: 32px; }
-    .country-select { background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); border-radius: 14px; padding: 16px 12px; font-family: 'Inter', sans-serif; font-size: 15px; font-weight: 600; color: var(--mango); outline: none; cursor: pointer; appearance: none; -webkit-appearance: none; width: 120px; flex-shrink: 0; text-align: center; }
-    .phone-row input { flex: 1; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); border-radius: 14px; padding: 16px; font-family: 'Inter', sans-serif; font-size: 16px; color: var(--white); outline: none; }
-    .phone-row input:focus { border-color: var(--mango); background: rgba(255,107,43,0.06); }
-    .phone-row input::placeholder { color: var(--grey); }
-    .code-inputs { display: flex; gap: 10px; justify-content: center; margin-bottom: 24px; }
-    .code-input { width: 60px; height: 68px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); border-radius: 14px; font-family: 'Syne', sans-serif; font-size: 28px; font-weight: 700; text-align: center; color: var(--white); outline: none; padding: 0; }
-    .code-input:focus { border-color: var(--mango); background: rgba(255,107,43,0.08); }
-    .resend { text-align: center; font-size: 13px; color: var(--grey); margin-bottom: 32px; }
-    .resend span { color: var(--mango-light); cursor: pointer; text-decoration: underline; }
-    .btn { width: 100%; padding: 18px; border-radius: 16px; font-family: 'Inter', sans-serif; font-size: 16px; font-weight: 600; border: none; cursor: pointer; background: var(--mango); color: white; box-shadow: 0 8px 32px rgba(255,107,43,0.35); transition: transform 0.15s ease; margin-bottom: 16px; }
-    .btn:active { transform: scale(0.97); }
-    .divider { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
-    .divider-line { flex: 1; height: 1px; background: rgba(255,255,255,0.08); }
-    .divider-text { font-size: 12px; color: var(--grey); }
+    :root { --green: #00C853; --dark: #0A0A0A; --card: #141414; --grey: #888; --white: #fff; }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { background: var(--dark); font-family: 'Inter', sans-serif; min-height: 100vh; display: flex; justify-content: center; align-items: center; }
+    .bg { position: fixed; inset: 0; background: radial-gradient(ellipse at top, #0d2b1a 0%, #0A0A0A 60%); z-index: 0; }
+    .screen { position: relative; z-index: 1; width: 100%; max-width: 420px; padding: 32px 24px; }
+    .header { display: flex; align-items: center; gap: 16px; margin-bottom: 40px; }
+    .back-btn { color: var(--white); text-decoration: none; font-size: 22px; }
+    .logo-text { font-size: 22px; font-weight: 700; color: var(--white); }
+    .logo-text span { color: var(--green); }
+    .step { display: none; }
+    .step.visible { display: block; }
+    .step-title { font-size: 28px; font-weight: 700; color: var(--white); line-height: 1.2; margin-bottom: 8px; }
+    .step-sub { color: var(--grey); font-size: 15px; margin-bottom: 32px; }
+    .input-label { font-size: 13px; color: var(--grey); margin-bottom: 8px; display: block; }
+    .phone-row { display: flex; gap: 8px; margin-bottom: 24px; }
+    .country-select { background: var(--card); border: 1px solid rgba(255,255,255,0.08); border-radius: 14px; color: var(--white); padding: 14px 10px; font-size: 14px; font-family: 'Inter', sans-serif; flex: 0 0 110px; }
+    .phone-row input { flex: 1; background: var(--card); border: 1px solid rgba(255,255,255,0.08); border-radius: 14px; color: var(--white); padding: 14px 16px; font-size: 16px; font-family: 'Inter', sans-serif; outline: none; }
+    .phone-row input:focus { border-color: var(--green); }
+    .btn { width: 100%; padding: 16px; border-radius: 16px; font-family: 'Inter', sans-serif; font-size: 16px; font-weight: 600; border: none; background: var(--green); color: #000; cursor: pointer; margin-bottom: 16px; }
+    .btn:disabled { opacity: 0.5; cursor: not-allowed; }
     .btn-secondary { width: 100%; padding: 16px; border-radius: 16px; font-family: 'Inter', sans-serif; font-size: 15px; font-weight: 500; border: 1px solid rgba(255,255,255,0.1); background: transparent; color: var(--white); cursor: pointer; text-align: center; text-decoration: none; display: block; }
-    .sms-info { text-align: center; font-size: 13px; color: var(--grey); margin-bottom: 24px; }
+    .divider { display: flex; align-items: center; gap: 12px; margin: 20px 0; }
+    .divider-line { flex: 1; height: 1px; background: rgba(255,255,255,0.08); }
+    .divider-text { color: var(--grey); font-size: 13px; white-space: nowrap; }
+    .sms-info { text-align: center; font-size: 14px; color: var(--grey); margin-bottom: 28px; }
     .sms-info strong { color: var(--white); }
+    .code-inputs { display: flex; gap: 12px; justify-content: center; margin-bottom: 28px; }
+    .code-input { width: 60px; height: 64px; text-align: center; font-size: 24px; font-weight: 700; background: var(--card); border: 1px solid rgba(255,255,255,0.08); border-radius: 14px; color: var(--white); font-family: 'Inter', sans-serif; outline: none; }
+    .code-input:focus { border-color: var(--green); }
+    .resend { text-align: center; font-size: 14px; color: var(--grey); margin-bottom: 24px; }
+    .resend span { color: var(--green); cursor: pointer; }
     .error-msg { color: #ff6b6b; font-size: 13px; margin-bottom: 16px; display: none; text-align: center; }
+    .error-msg.visible { display: block; }
+    #recaptcha-container { display: flex; justify-content: center; margin-bottom: 16px; }
+    .loading { text-align: center; color: var(--grey); font-size: 14px; margin-bottom: 16px; display: none; }
+    .loading.visible { display: block; }
   </style>
 </head>
 <body>
@@ -49,6 +53,7 @@
       <div class="logo-text">Go<span>'</span>Yaav</div>
     </div>
 
+    <!-- ÉTAPE 1 — NUMÉRO -->
     <div class="step visible" id="step1">
       <div class="step-title">Bon retour<br/>sur Go'Yaav 👋</div>
       <div class="step-sub">Entrez votre numéro pour recevoir un code de connexion.</div>
@@ -59,17 +64,23 @@
           <option value="+596">🇲🇶 +596</option>
           <option value="+594">🇬🇫 +594</option>
           <option value="+262">🇷🇪 +262</option>
-          <option value="+33">🇫🇷 +33</option>
+          <option value="+33" selected>🇫🇷 +33</option>
+          <option value="+1758">🇱🇨 +1758</option>
+          <option value="+1784">🇻🇨 +1784</option>
+          <option value="+1246">🇧🇧 +1246</option>
           <option value="+1">🇺🇸 +1</option>
         </select>
-        <input type="tel" id="phone" placeholder="690 00 00 00" maxlength="12" />
+        <input type="tel" id="phone" placeholder="6 00 00 00 00" maxlength="12" />
       </div>
-      <div class="error-msg" id="loginError">Numéro non trouvé. Créez un compte d'abord.</div>
-      <button class="btn" onclick="checkUser()">Recevoir le code SMS</button>
+      <div id="recaptcha-container"></div>
+      <div class="error-msg" id="loginError">Numéro invalide. Vérifiez et réessayez.</div>
+      <div class="loading" id="loadingSMS">Envoi du SMS en cours…</div>
+      <button class="btn" onclick="sendSMS()" id="sendBtn">Recevoir le code SMS</button>
       <div class="divider"><div class="divider-line"></div><div class="divider-text">Pas encore de compte ?</div><div class="divider-line"></div></div>
       <a href="inscription.html" class="btn-secondary">Créer un compte Go'Yaav</a>
     </div>
 
+    <!-- ÉTAPE 2 — CODE -->
     <div class="step" id="step2">
       <div class="step-title">Code de<br/>vérification 🔐</div>
       <div class="sms-info">Code envoyé au <strong id="phoneDisplay"></strong></div>
@@ -77,36 +88,142 @@
         <input type="number" class="code-input" maxlength="1" id="c1" oninput="nextCode(this,'c2')" />
         <input type="number" class="code-input" maxlength="1" id="c2" oninput="nextCode(this,'c3')" />
         <input type="number" class="code-input" maxlength="1" id="c3" oninput="nextCode(this,'c4')" />
-        <input type="number" class="code-input" maxlength="1" id="c4" oninput="nextCode(this,null)" />
+        <input type="number" class="code-input" maxlength="1" id="c4" oninput="nextCode(this,'c5')" />
+        <input type="number" class="code-input" maxlength="1" id="c5" oninput="nextCode(this,'c6')" />
+        <input type="number" class="code-input" maxlength="1" id="c6" oninput="nextCode(this,null)" />
       </div>
-      <div class="resend">Pas reçu ? <span onclick="alert('Code renvoyé !')">Renvoyer le code</span></div>
-      <button class="btn" onclick="login()">Se connecter</button>
+      <div class="error-msg" id="codeError">Code incorrect. Réessayez.</div>
+      <div class="loading" id="loadingVerif">Vérification en cours…</div>
+      <button class="btn" onclick="verifyCode()" id="verifyBtn">Valider le code</button>
+      <div class="resend">Pas reçu ? <span onclick="resendCode()">Renvoyer le code</span></div>
     </div>
   </div>
 
-  <script>
-    function checkUser() {
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js";
+    import { getAuth, RecaptchaVerifier, signInWithPhoneNumber } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-auth.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyBmDf_hVfJFAkWPelFV0IoGQnQiWjw_7Fg",
+      authDomain: "goyaav-77651.firebaseapp.com",
+      projectId: "goyaav-77651",
+      storageBucket: "goyaav-77651.firebasestorage.app",
+      messagingSenderId: "752243797394",
+      appId: "1:752243797394:web:758b6750ab2a4a30a4254b",
+      measurementId: "G-0BR8BWV69J"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    auth.languageCode = 'fr';
+
+    let confirmationResult = null;
+
+    function setupRecaptcha() {
+      if (!window.recaptchaVerifier) {
+        window.recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
+          size: 'normal',
+          callback: () => {},
+          'expired-callback': () => {}
+        });
+        window.recaptchaVerifier.render();
+      }
+    }
+
+    window.sendSMS = async function() {
       const code = document.getElementById('countryCode').value;
-      const phone = document.getElementById('phone').value.trim();
-      if (phone.length < 8) { document.getElementById('loginError').style.display = 'block'; return; }
-      // Pour le prototype : on accepte n'importe quel numéro enregistré
-      const user = JSON.parse(localStorage.getItem('goyaav_user') || 'null');
-      document.getElementById('loginError').style.display = 'none';
-      document.getElementById('phoneDisplay').textContent = code + ' ' + phone;
-      document.getElementById('step1').classList.remove('visible');
-      document.getElementById('step2').classList.add('visible');
-      setTimeout(() => document.getElementById('c1').focus(), 100);
-    }
+      const num = document.getElementById('phone').value.replace(/\s/g, '');
+      const fullNumber = code + num;
+      const btn = document.getElementById('sendBtn');
+      const err = document.getElementById('loginError');
+      const loading = document.getElementById('loadingSMS');
 
-    function login() {
-      const code = ['c1','c2','c3','c4'].map(id => document.getElementById(id).value).join('');
-      if (code.length < 4) { alert('Entrez les 4 chiffres'); return; }
-      window.location.href = 'accueil.html';
-    }
+      if (!num || num.length < 6) {
+        err.classList.add('visible');
+        return;
+      }
 
-    function nextCode(input, nextId) {
-      if (input.value.length >= 1 && nextId) document.getElementById(nextId).focus();
-    }
+      err.classList.remove('visible');
+      btn.disabled = true;
+      loading.classList.add('visible');
+
+      setupRecaptcha();
+
+      try {
+        confirmationResult = await signInWithPhoneNumber(auth, fullNumber, window.recaptchaVerifier);
+        window.confirmationResult = confirmationResult;
+        loading.classList.remove('visible');
+        document.getElementById('phoneDisplay').textContent = fullNumber;
+        document.getElementById('step1').classList.remove('visible');
+        document.getElementById('step2').classList.add('visible');
+        document.getElementById('c1').focus();
+      } catch (error) {
+        loading.classList.remove('visible');
+        btn.disabled = false;
+        err.textContent = 'Erreur : ' + (error.message || 'Réessayez.');
+        err.classList.add('visible');
+        if (window.recaptchaVerifier) {
+          window.recaptchaVerifier.clear();
+          window.recaptchaVerifier = null;
+        }
+      }
+    };
+
+    window.verifyCode = async function() {
+      const code = [
+        document.getElementById('c1').value,
+        document.getElementById('c2').value,
+        document.getElementById('c3').value,
+        document.getElementById('c4').value,
+        document.getElementById('c5').value,
+        document.getElementById('c6').value,
+      ].join('');
+
+      const err = document.getElementById('codeError');
+      const loading = document.getElementById('loadingVerif');
+      const btn = document.getElementById('verifyBtn');
+
+      if (code.length < 6) {
+        err.textContent = 'Entrez les 6 chiffres du code.';
+        err.classList.add('visible');
+        return;
+      }
+
+      err.classList.remove('visible');
+      btn.disabled = true;
+      loading.classList.add('visible');
+
+      try {
+        const result = await window.confirmationResult.confirm(code);
+        const user = result.user;
+        localStorage.setItem('goyaav_uid', user.uid);
+        localStorage.setItem('goyaav_phone', user.phoneNumber);
+        localStorage.setItem('goyaav_connected', 'true');
+        loading.classList.remove('visible');
+        window.location.href = 'accueil.html';
+      } catch (error) {
+        loading.classList.remove('visible');
+        btn.disabled = false;
+        err.textContent = 'Code incorrect ou expiré. Réessayez.';
+        err.classList.add('visible');
+      }
+    };
+
+    window.nextCode = function(el, nextId) {
+      const val = el.value.toString();
+      if (val.length > 1) el.value = val[val.length - 1];
+      if (el.value && nextId) document.getElementById(nextId).focus();
+    };
+
+    window.resendCode = function() {
+      document.getElementById('step2').classList.remove('visible');
+      document.getElementById('step1').classList.add('visible');
+      if (window.recaptchaVerifier) {
+        window.recaptchaVerifier.clear();
+        window.recaptchaVerifier = null;
+      }
+      document.getElementById('sendBtn').disabled = false;
+    };
   </script>
 </body>
 </html>
