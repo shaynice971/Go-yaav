@@ -1,127 +1,176 @@
+'use client';
+import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import AppLayout from '../components/AppLayout';
+import { supabase } from '../../lib/supabase';
+import { Home, FileText, AlertCircle, TrendingUp, Plus, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
-import { TrendingUp, FileText, AlertCircle, Building2, ArrowRight, CheckCircle2 } from 'lucide-react';
+import type { Database } from '../../lib/database.types';
 
-const kpis = [
-  { label: 'Loyers encaissés', value: '3 200 €', sub: 'Juin 2024', icon: TrendingUp, color: '#2A9FD6', bg: '#e0f2fb' },
-  { label: 'Quittances envoyées', value: '4 / 4', sub: 'Ce mois', icon: FileText, color: '#22c55e', bg: '#dcfce7' },
-  { label: 'Impayés', value: '1', sub: 'En attente', icon: AlertCircle, color: '#ef4444', bg: '#fee2e2' },
-  { label: 'Biens gérés', value: '4', sub: 'Plan Essentiel', icon: Building2, color: '#f59e0b', bg: '#fef3c7' },
-];
-
-const biens = [
-  { id: '1', adresse: '12 rue des Lilas, 75011 Paris', locataire: 'Marie Dupont', loyer: 850, charges: 60, statut: 'payé' },
-  { id: '2', adresse: '8 avenue Victor Hugo, 69003 Lyon', locataire: 'Thomas Bernard', loyer: 720, charges: 50, statut: 'payé' },
-  { id: '3', adresse: '3 rue du Moulin, 33000 Bordeaux', locataire: 'Sophie Leroy', loyer: 650, charges: 40, statut: 'impayé' },
-  { id: '4', adresse: '21 bd Pasteur, 13006 Marseille', locataire: 'Paul Moreau', loyer: 980, charges: 80, statut: 'payé' },
-];
-
-const recentActions = [
-  { action: 'Quittance envoyée', detail: 'Marie Dupont — Juin 2024', date: 'Hier', type: 'success' },
-  { action: 'Quittance envoyée', detail: 'Thomas Bernard — Juin 2024', date: 'Hier', type: 'success' },
-  { action: 'Relance envoyée', detail: 'Sophie Leroy — Loyer impayé J+3', date: 'Il y a 2 j', type: 'warning' },
-  { action: 'Bail signé', detail: 'Paul Moreau — Marseille', date: 'Il y a 5 j', type: 'success' },
-];
+type Bien = Database['public']['Tables']['biens']['Row'];
+type Locataire = Database['public']['Tables']['locataires']['Row'];
+type Quittance = Database['public']['Tables']['quittances']['Row'];
 
 export default function DashboardPage() {
+  const router = useRouter();
+  const [biens, setBiens] = useState<Bien[]>([]);
+  const [locataires, setLocataires] = useState<Locataire[]>([]);
+  const [quittances, setQuittances] = useState<Quittance[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [prenom, setPrenom] = useState('');
+
+  useEffect(() => {
+    const load = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) { router.push('/connexion'); return; }
+
+      const [profileRes, biensRes, locatairesRes, quittancesRes] = await Promise.all([
+        supabase.from('profiles').select('prenom').eq('id', user.id).single(),
+        supabase.from('biens').select('*').eq('user_id', user.id),
+        supabase.from('locataires').select('*').eq('user_id', user.id).eq('actif', true),
+        supabase.from('quittances').select('*').eq('user_id', user.id).order('created_at', { ascending: false }).limit(10),
+      ]);
+
+      setPrenom(profileRes.data?.prenom ?? '');
+      setBiens(biensRes.data ?? []);
+      setLocataires(locatairesRes.data ?? []);
+      setQuittances(quittancesRes.data ?? []);
+      setLoading(false);
+    };
+    load();
+  }, [router]);
+
+  const totalLoyer = biens.reduce((s, b) => s + b.loyer + b.charges, 0);
+  const moisCourant = new Date().toISOString().slice(0, 7);
+  const quittancesCeMois = quittances.filter(q => q.mois === moisCourant);
+  const impayees = quittances.filter(q => q.statut !== 'payee' && q.mois < moisCourant);
+
+  const kpis = [
+    { label: 'Loyers / mois', value: `${totalLoyer.toLocaleString('fr-FR')} €`, icon: TrendingUp, color: '#2A9FD6' },
+    { label: 'Quittances ce mois', value: quittancesCeMois.length.toString(), icon: FileText, color: '#10b981' },
+    { label: 'Impayés', value: impayees.length.toString(), icon: AlertCircle, color: impayees.length > 0 ? '#ef4444' : '#10b981' },
+    { label: 'Biens', value: biens.length.toString(), icon: Home, color: '#8b5cf6' },
+  ];
+
+  if (loading) {
+    return (
+      <AppLayout>
+        <div className="flex items-center justify-center h-64">
+          <div className="text-[#5a7080] text-sm">Chargement...</div>
+        </div>
+      </AppLayout>
+    );
+  }
+
   return (
     <AppLayout>
-      <div className="max-w-5xl mx-auto">
-        <div className="mb-8">
-          <h1 className="text-2xl font-bold text-[#0f1a22]">Bonjour, Jean 👋</h1>
-          <p className="text-sm text-[#5a7080] mt-1">Voici un aperçu de votre gestion locative — Juin 2024</p>
-        </div>
+      <div className="mb-8">
+        <h1 className="text-2xl font-bold text-[#0f1a22]">
+          Bonjour{prenom ? `, ${prenom}` : ''} 👋
+        </h1>
+        <p className="text-sm text-[#5a7080] mt-1">Voici un résumé de votre activité.</p>
+      </div>
 
-        {/* KPIs */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-          {kpis.map((kpi) => (
-            <div key={kpi.label} className="bg-white rounded-xl border border-gray-100 p-5">
-              <div className="flex items-center justify-between mb-3">
-                <p className="text-xs font-medium text-[#5a7080]">{kpi.label}</p>
-                <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: kpi.bg }}>
-                  <kpi.icon size={16} style={{ color: kpi.color }} />
-                </div>
-              </div>
-              <p className="text-2xl font-bold text-[#0f1a22]">{kpi.value}</p>
-              <p className="text-xs text-[#5a7080] mt-1">{kpi.sub}</p>
+      <div className="grid grid-cols-4 gap-4 mb-8">
+        {kpis.map(k => (
+          <div key={k.label} className="border border-gray-100 rounded-xl p-5">
+            <div className="flex items-center justify-between mb-3">
+              <span className="text-xs text-[#5a7080] font-medium">{k.label}</span>
+              <k.icon size={16} style={{ color: k.color }} />
             </div>
-          ))}
-        </div>
+            <p className="text-2xl font-bold" style={{ color: k.color }}>{k.value}</p>
+          </div>
+        ))}
+      </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Biens */}
-          <div className="lg:col-span-2 bg-white rounded-xl border border-gray-100 p-6">
-            <div className="flex items-center justify-between mb-5">
-              <h2 className="font-semibold text-[#0f1a22]">Mes biens</h2>
-              <Link href="/biens" className="text-xs text-[#2A9FD6] hover:underline flex items-center gap-1">
-                Voir tout <ArrowRight size={12} />
+      <div className="grid grid-cols-3 gap-6">
+        <div className="col-span-2 border border-gray-100 rounded-xl p-6">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="font-semibold text-[#0f1a22]">Mes biens</h2>
+            <Link href="/biens" className="text-xs text-[#2A9FD6] hover:underline flex items-center gap-1">
+              Voir tout <ArrowRight size={12} />
+            </Link>
+          </div>
+          {biens.length === 0 ? (
+            <div className="text-center py-8">
+              <p className="text-sm text-[#5a7080] mb-4">Aucun bien enregistré.</p>
+              <Link href="/biens" className="text-sm font-medium text-[#2A9FD6] hover:underline flex items-center gap-1 justify-center">
+                <Plus size={14} /> Ajouter un bien
               </Link>
             </div>
+          ) : (
             <div className="space-y-3">
-              {biens.map((b) => (
-                <Link
-                  key={b.id}
-                  href={`/biens/${b.id}`}
-                  className="flex items-center justify-between p-3 rounded-lg hover:bg-[#f0f8fd] transition-colors"
-                >
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-[#0f1a22] truncate">{b.adresse}</p>
-                    <p className="text-xs text-[#5a7080] mt-0.5">{b.locataire}</p>
-                  </div>
-                  <div className="flex items-center gap-3 ml-4">
-                    <p className="text-sm font-semibold text-[#0f1a22]">{b.loyer + b.charges} €</p>
-                    <span
-                      className={`text-xs font-medium px-2 py-0.5 rounded-full ${
-                        b.statut === 'payé' ? 'bg-green-50 text-green-600' : 'bg-red-50 text-red-500'
-                      }`}
-                    >
-                      {b.statut === 'payé' ? 'Payé' : 'Impayé'}
-                    </span>
-                  </div>
-                </Link>
-              ))}
+              {biens.slice(0, 4).map(b => {
+                const loc = locataires.find(l => l.bien_id === b.id);
+                return (
+                  <Link key={b.id} href={`/biens/${b.id}`} className="flex items-center justify-between p-3 rounded-lg hover:bg-gray-50 transition-colors">
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center">
+                        <Home size={14} className="text-[#2A9FD6]" />
+                      </div>
+                      <div>
+                        <p className="text-sm font-medium text-[#0f1a22]">{b.adresse}</p>
+                        <p className="text-xs text-[#5a7080]">{b.ville} · {loc ? `${loc.prenom} ${loc.nom}` : 'Vacant'}</p>
+                      </div>
+                    </div>
+                    <span className="text-sm font-semibold text-[#0f1a22]">{(b.loyer + b.charges).toLocaleString('fr-FR')} €</span>
+                  </Link>
+                );
+              })}
             </div>
-          </div>
-
-          {/* Activité récente */}
-          <div className="bg-white rounded-xl border border-gray-100 p-6">
-            <h2 className="font-semibold text-[#0f1a22] mb-5">Activité récente</h2>
-            <div className="space-y-4">
-              {recentActions.map((a, i) => (
-                <div key={i} className="flex items-start gap-3">
-                  <div className={`w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5 ${a.type === 'success' ? 'bg-green-50' : 'bg-orange-50'}`}>
-                    {a.type === 'success'
-                      ? <CheckCircle2 size={12} className="text-green-500" />
-                      : <AlertCircle size={12} className="text-orange-400" />
-                    }
-                  </div>
-                  <div>
-                    <p className="text-sm font-medium text-[#0f1a22]">{a.action}</p>
-                    <p className="text-xs text-[#5a7080]">{a.detail}</p>
-                    <p className="text-xs text-[#5a7080] mt-0.5">{a.date}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
+          )}
         </div>
 
-        {/* Action rapides */}
-        <div className="mt-6 bg-white rounded-xl border border-gray-100 p-6">
+        <div className="border border-gray-100 rounded-xl p-6">
           <h2 className="font-semibold text-[#0f1a22] mb-4">Actions rapides</h2>
-          <div className="flex flex-wrap gap-3">
-            <Link href="/quittances" className="flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium text-white" style={{ background: '#2A9FD6' }}>
-              <FileText size={15} /> Générer une quittance
-            </Link>
-            <Link href="/relances" className="flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium border border-gray-200 text-[#5a7080] hover:border-[#2A9FD6] hover:text-[#2A9FD6] transition-colors">
-              <AlertCircle size={15} /> Voir les impayés
-            </Link>
-            <Link href="/biens" className="flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium border border-gray-200 text-[#5a7080] hover:border-[#2A9FD6] hover:text-[#2A9FD6] transition-colors">
-              <Building2 size={15} /> Ajouter un bien
-            </Link>
+          <div className="space-y-2">
+            {[
+              { label: 'Générer quittances', href: '/quittances', icon: FileText },
+              { label: 'Envoyer relance', href: '/relances', icon: AlertCircle },
+              { label: 'Ajouter un bien', href: '/biens', icon: Home },
+            ].map(a => (
+              <Link key={a.label} href={a.href} className="flex items-center gap-3 p-3 rounded-lg border border-gray-100 hover:border-[#2A9FD6] hover:bg-blue-50 transition-all text-sm font-medium text-[#0f1a22]">
+                <a.icon size={14} className="text-[#2A9FD6]" /> {a.label}
+              </Link>
+            ))}
           </div>
+
+          {impayees.length > 0 && (
+            <div className="mt-4 p-3 bg-red-50 rounded-lg border border-red-100">
+              <p className="text-xs font-semibold text-red-600 mb-1">{impayees.length} impayé{impayees.length > 1 ? 's' : ''}</p>
+              <Link href="/relances" className="text-xs text-red-500 hover:underline">Voir les relances →</Link>
+            </div>
+          )}
         </div>
       </div>
+
+      {quittances.length > 0 && (
+        <div className="border border-gray-100 rounded-xl p-6 mt-6">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="font-semibold text-[#0f1a22]">Quittances récentes</h2>
+            <Link href="/quittances" className="text-xs text-[#2A9FD6] hover:underline flex items-center gap-1">
+              Voir tout <ArrowRight size={12} />
+            </Link>
+          </div>
+          <div className="space-y-2">
+            {quittances.slice(0, 5).map(q => (
+              <div key={q.id} className="flex items-center justify-between py-2 border-b border-gray-50 last:border-0">
+                <div>
+                  <p className="text-sm font-medium text-[#0f1a22]">Quittance {q.mois}</p>
+                  <p className="text-xs text-[#5a7080]">{(q.loyer + q.charges).toLocaleString('fr-FR')} €</p>
+                </div>
+                <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${
+                  q.statut === 'payee' ? 'bg-green-50 text-green-600' :
+                  q.statut === 'envoyee' ? 'bg-blue-50 text-blue-600' :
+                  'bg-gray-100 text-gray-500'
+                }`}>
+                  {q.statut === 'payee' ? 'Payée' : q.statut === 'envoyee' ? 'Envoyée' : 'Générée'}
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
     </AppLayout>
   );
 }

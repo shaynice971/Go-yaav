@@ -1,11 +1,12 @@
 'use client';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import {
   LayoutDashboard, Building2, FileText, FolderOpen,
   BellRing, Settings, LogOut
 } from 'lucide-react';
 import Logo from './Logo';
+import { supabase } from '../../lib/supabase';
 
 const nav = [
   { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
@@ -18,6 +19,13 @@ const nav = [
 
 export default function Sidebar() {
   const pathname = usePathname();
+  const router = useRouter();
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    router.push('/connexion');
+  };
+
   return (
     <aside className="fixed left-0 top-0 h-screen w-56 border-r border-gray-100 bg-white flex flex-col z-50">
       <div className="px-5 py-5 border-b border-gray-100">
@@ -43,13 +51,13 @@ export default function Sidebar() {
         })}
       </nav>
       <div className="px-3 py-4 border-t border-gray-100">
-        <Link
-          href="/connexion"
-          className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-[#5a7080] hover:text-red-500 hover:bg-red-50 transition-colors"
+        <button
+          onClick={handleLogout}
+          className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-[#5a7080] hover:text-red-500 hover:bg-red-50 transition-colors"
         >
           <LogOut size={18} />
           Déconnexion
-        </Link>
+        </button>
       </div>
     </aside>
   );
